@@ -1,0 +1,169 @@
+package com.company;
+
+import java.util.Scanner;
+import java.util.Arrays;
+
+class Main {
+    public static Scanner scanner = new Scanner(System.in);
+    public static int income = 0;
+    public static int n;
+    public static int m;
+    public static String[][] array;
+    public static int purch_Tickets = 0;
+    public static int rowNumber = 0;
+    public static int seatNumber = 1;
+    public static int total_income;
+
+
+    public static void main(String[] args) {
+        choiceUser();
+    }
+
+    public static void choiceUser() {
+        System.out.println("Enter the number of rows:");
+        n = scanner.nextInt();
+        System.out.println("Enter the number of seats in each row:");
+        m = scanner.nextInt();
+        array = new String[n+1][m];
+        int sum = 0;
+
+        boolean treamer = true;
+
+        while (treamer) {
+            System.out.println(
+                    "\n1. Show the seats\n" +
+                            "2. Buy a ticket\n" +
+                            "3. Statistics\n" +
+                            "0. Exit");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    showSeats(array, n, m, rowNumber, seatNumber);
+                    break;
+                case 2:
+                    buyTicket(array, n, m, rowNumber, seatNumber);
+                    break;
+                case 3:
+                    statistic(array, purch_Tickets, n, m, income, total_income);
+                    break;
+                case 0:
+                    treamer = false;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    public static void showSeats(String[][] array, int n, int m, int rowNumber, int seatNumber) {
+        //выводим 1-ую строку с нумерацией
+        System.out.print("Cinema:\n ");
+        for (int i = 1; i < m + 1; i++) {
+            System.out.print(" " + i);
+        }
+        System.out.print("\n");
+
+        for (int i = 1; i < array.length; i++) {
+            for (int j = 0; j < array[i].length; j++) {
+                if (array[i][j] != "B") {
+                    array[i][j] ="S";
+                  }
+            }
+        }
+        array[rowNumber][seatNumber - 1] = "B";
+        for (int i = 1; i < array.length; i++) {
+            System.out.print("" + i);
+            for (int j = 0; j < array[i].length; j++) {
+                System.out.print(" " + array[i][j]);
+            }
+            System.out.println();
+        }
+    }
+
+    public static void buyTicket(String[][] array, int n, int m, int rowNumber, int seatNumber) {
+        boolean treamer = true;
+        while (treamer) {
+            System.out.println("Enter a row number:");
+            rowNumber = scanner.nextInt();
+            System.out.println("Enter a seat number in that row:");
+            seatNumber = scanner.nextInt();
+
+            if (rowNumber > n || seatNumber > m) {
+                System.out.println("Wrong input!");
+                return;
+            }
+
+            //заполняем пустой массив знаками
+            for (int i = 1; i < array.length; i++) {
+                for (int j = 0; j < array[i].length; j++) {
+                    if (array[i][j] != "B") {
+                        array[i][j] = "S";
+                    }
+                }
+            }
+
+            // в массиве появились знаки, можно сравнивать
+            if (array[rowNumber][seatNumber - 1] != "B") {
+                //занимаем место
+                array[rowNumber][seatNumber - 1] = "B";
+                //выводим стоимость билета
+                costTicket(n, m, rowNumber);
+                break;
+            } else {
+                System.out.println("That ticket has already been purchased!");
+            }
+        }
+    }
+
+
+    public static void costTicket(int n, int m, int rowNumber) {
+        if (n * m < 60) {
+            System.out.print("\nTicket price: $10\n");
+            income = income + 10;
+        } else {
+            if (rowNumber < n / 2 || rowNumber == n / 2) {
+                System.out.print("\nTicket price: $10\n");
+                income = income + 10;
+            } else {
+                System.out.print("\nTicket price: $8\n");
+                income = income + 8;
+            }
+        }
+    }
+
+    public static void statistic(String[][] array, int purch_Tickets, int n, int m, int income, int total_income) {
+    //число купленных билетов
+        for (int i = 1; i < array.length; i++) {
+            for (int j = 0; j < array[i].length; j++) {
+                if (array[i][j] == "B") {
+                    purch_Tickets = purch_Tickets + 1;
+                }
+            }
+        }
+        System.out.printf("Number of purchased tickets: %d\n", purch_Tickets);
+
+        float percent = (float)purch_Tickets * 100 / (n * m);
+        System.out.printf("Percentage: %.2f", percent);
+        System.out.print("%\n");
+        System.out.printf("Current income: $%d\n", income);
+        total_income = total_income(total_income, n, m);
+        System.out.printf("Total income: $%d\n", total_income);
+    }
+
+    public static int total_income(int total_income, int n, int m) {
+        if (n * m < 60) {
+            //System.out.print("\nTicket price: $10\n");
+            total_income = n * m * 10;
+        } else {
+            // число рядов четное
+            if (n / 2 == 0) {
+                total_income =  ((n / 2)  * m * 10) + ((n / 2) * m * 8);
+            } else {
+                //число рядов не четное
+                total_income = ((n / 2)  * m * 10) + (((n / 2)+1) * m * 8);
+            }
+        }
+        return total_income;
+    }
+}
